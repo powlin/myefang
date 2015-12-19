@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap     
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"     
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="menu">
+	<typeAlias alias="menu" type="com.yaoyan.user.domain.Menu"/>
+
+	<select id="getMenuByUsername" parameterClass="java.util.Map" resultClass="menu">
+		select username as username, menuname as menuname, menulink as menulink
+		   from menu where username=#username# and symbol=#symbol#
+	</select>
+
+</sqlMap>

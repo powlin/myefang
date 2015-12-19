@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap     
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"     
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="user">
+	<typeAlias alias="user" type="com.yaoyan.user.domain.User"/>
+
+	<select id="getUsernameAndPassword" parameterClass="java.util.Map" resultClass="user">
+		select username as username, password as password
+		   from user where username=#username# and password=#password#
+	</select>
+
+	<select id="getUsername" parameterClass="java.util.Map" resultClass="user">
+		select username as username, password as password
+		   from user where username=#username#
+	</select>
+	
+	<insert id="insertNewUser" parameterClass="java.util.Map">
+		insert into user (username, password) values (#username#, #password#)
+		 <selectKey resultClass="long" keyProperty="id">
+	         SELECT LAST_INSERT_ID() AS ID
+	     </selectKey>
+	</insert>
+	
+</sqlMap>

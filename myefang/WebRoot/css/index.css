@@ -1,0 +1,8 @@
+body{background-image: url("../img/background.jpg");}
+#loginDiv{width: 260px;height: 150px;position: absolute;top: 300px;right: 230px;border-style: outset;}
+#registerDiv{width: 260px;height: 180px;position: absolute;top: 300px;right: 230px;border-style: outset;display: none;}
+#username, #usernameR, #password, #passwordR, #passwordRA{border-radius:10px;padding-left: 5px;padding-right: 5px;border-color: white;}
+.title1Label{color: #D0D0D0;font-weight: bold;font-size: 23px;}
+.bodyDiv{width: 260px;height: 120px;}
+.btnDiv{margin-left: 90px;}
+.fontLabel{font-size: 14px;color: red;margin-right: 20px;font-weight: bold;text-decoration: underline;cursor: pointer;}

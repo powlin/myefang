@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:tool="http://www.springframework.org/schema/tool" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+            http://www.springframework.org/schema/tx  
+            http://www.springframework.org/schema/tx/spring-tx.xsd  
+            http://www.springframework.org/schema/aop  
+            http://www.springframework.org/schema/aop/spring-aop.xsd  
+            http://www.springframework.org/schema/context  
+            http://www.springframework.org/schema/context/spring-context.xsd  
+           http://www.springframework.org/schema/jee  
+           http://www.springframework.org/schema/jee/spring-jee.xsd  
+           http://www.springframework.org/schema/util  
+           http://www.springframework.org/schema/util/spring-util.xsd  
+           http://www.springframework.org/schema/tool  
+           http://www.springframework.org/schema/tool/spring-tool.xsd"
+	default-lazy-init="true" default-autowire="byType">
+
+	<!-- 扫描注解 -->
+<!--	<context:annotation-config />-->
+<!--	<context:component-scan base-package="com.yaoyan.*.*" />-->
+
+	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"></bean>
+	
+	<bean id="userService" class="com.yaoyan.user.service.impl.UserServiceImp"></bean>
+	<bean id="userDao" class="com.yaoyan.user.dao.impl.UserDaoImp"></bean>
+	
+	<bean id="menuService" class="com.yaoyan.user.service.impl.MenuServiceImp"></bean>
+	<bean id="menuDao" class="com.yaoyan.user.dao.impl.MenuDaoImp"></bean>
+
+	<!-- property-placeholder是一个属性遍历器，定位一个属性文件 --> 
+	<context:property-placeholder location="classpath:com/yaoyan/base/resources/jdbc.properties" />
+	    
+	<!-- 数据源配置,使用应用内的DBCP数据库连接池 --> 
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">   
+	    <!-- Connection Info -->
+	    <property name="driverClassName" value="${driver}" />   
+	    <property name="url" value="${url}" />
+	    <property name="username" value="${username}" />   
+	    <property name="password" value="${password}" />  
+	</bean>    
+	<!-- 事务配置 --> 
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" ></property>
+	</bean> 
+	 <!--配置哪些方法,什么情况下需要回滚--> 
+   <tx:advice id="serviceAdvice" transaction-manager="txManager">  
+	    <tx:attributes>   
+	        <!--当代理的service层中的方法抛出异常的时候才回滚,必须加rollback-for参数--> 
+	        <tx:method name="transaction*" propagation="REQUIRED" rollback-for="Throwable"/>
+	        <tx:method name="insert*" propagation="REQUIRED" rollback-for="Throwable"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Throwable"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="Throwable"/>
+            <tx:method name="*" read-only="true"/>
+	    </tx:attributes>  
+	</tx:advice>  
+	<!-- 配置哪些类的方法需要进行事务管理 -->  
+	<aop:config proxy-target-class="true">  
+		<aop:pointcut id="servicePointcut" expression="(execution(* com.yaoyan.user.service.impl.*.transaction*(..)))"/>  
+		<aop:advisor pointcut-ref="servicePointcut" advice-ref="serviceAdvice"/>  
+	</aop:config>
+	 
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+  		<!-- 此处应注入ibatis配置文件，而非sqlMap文件，否则会出现“there is no statement.....异常” -->
+  		<property name="configLocation">
+     		<value>classpath:com/yaoyan/base/resources/sqlMapConfig.xml</value>
+  		</property>
+	</bean>
+
+</beans>
